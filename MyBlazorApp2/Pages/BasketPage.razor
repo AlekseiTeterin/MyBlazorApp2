@@ -1,0 +1,37 @@
+﻿@page "/basket"
+
+<h2>Корзина </h2>
+
+@inject IBasket Basket
+
+@foreach (var product in Basket.GetProducts())
+{
+    <p>
+        @product.Name (цена: @product.Price)
+        <button @onclick="@(() => Basket.DeleteProductFromBasket(product))" class="btn-primary">Удалить товар</button>
+    </p>    
+
+}
+
+<p role="status">Итоговая стоимость: 
+    @foreach (var product in Basket.GetProducts())
+    {
+        AddToCounter(product.Price);
+    }
+    @currentCounter
+</p>
+
+<div>
+    <button class="btn-success">Оплатить</button> @*пока без логики*@
+    <button @onclick="@(() => Basket.ClearAllBasket())" class="btn-secondary">Очистить корзину</button>
+</div>
+
+@code {
+    private decimal currentCounter = 0;
+
+    private void AddToCounter(decimal _price)
+    {
+        currentCounter += _price;
+    }
+   
+}

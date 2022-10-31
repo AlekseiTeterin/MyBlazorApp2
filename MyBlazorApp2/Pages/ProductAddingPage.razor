@@ -1,0 +1,39 @@
+﻿@page "/ProductAdding"
+@using System.ComponentModel.DataAnnotations;
+
+<h3>Добавление товара в каталог</h3>
+
+@inject ICatalog Catalog
+@inject IJSRuntime JS
+<EditForm Model="_model" OnValidSubmit="SubmitProduct">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    Название:<InputText class="form-control"
+                        @bind-Value="_model.Name"></InputText><br />
+    Цена:<InputNumber class="form-control" 
+                        @bind-Value="_model.Price"></InputNumber>
+    <input class="btn-primary" type="submit" value="Добавить"/>
+</EditForm>
+
+@code {
+    private readonly ProductAddingModel _model = new();
+
+    private void SubmitProduct()
+    {
+        var id = Catalog.GetProducts().Max(it => it.Id);
+        var product = new Product((id+1), _model.Name, _model.Price);
+        Catalog.AddProduct(product);
+        JS.InvokeVoidAsync("show_message", args: "Товар добавлен!");
+    }
+
+
+    private class ProductAddingModel
+    {
+        [Required]
+        [MinLength(3, ErrorMessage = "Name is too short.")]
+        public string Name { get; set; } = "";
+        public decimal Price { get; set; }
+    }
+
+    
+}

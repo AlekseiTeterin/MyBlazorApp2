@@ -1,0 +1,32 @@
+﻿@page "/catalog"
+<h3>Список товаров</h3>
+
+@inject ICatalog Catalog
+@inject IBasket Basket
+@inject IToastService toastService
+@inject IJSRuntime JS
+
+@foreach(var product in Catalog.GetProducts())
+{
+    <div>
+        <p>
+            @product.Name (цена: @product.Price)
+            <button name="@product.Id" @onclick="@(() => SubmitToBasket(product.Id, product.Name, product.Price))" class="btn-primary" type="submit">Купить</button>
+           @* <button class="btn btn-success" @onclick="@(() => toastService.ShowSuccess("Добавляем в корзину товар" + @product.Name))">в корзину</button>*@
+        </p>    
+    </div>
+    
+}
+
+@code{
+
+
+    private void SubmitToBasket(int _id, string _name, decimal _price)
+    {
+        var product = new Product(_id, _name, _price);
+        Basket.AddProductToBasket(product);
+        JS.InvokeVoidAsync("show_message", args: "Товар успешно добавлен в корзину!");
+    }
+
+    
+}
